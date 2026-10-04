@@ -1,0 +1,8 @@
+# CODEOWNERS
+# GitHub automatically requests a review from the people/teams listed here
+# whenever a pull request changes matching files.
+# Docs: https://docs.github.com/en/repositories/managing-your-repos-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default: every PR requests a review from these squadmates.
+# Replace the placeholders below with real GitHub usernames (keep the @).
+* @linmicarm @SQUADMATE_2 @SQUADMATE_3

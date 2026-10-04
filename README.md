@@ -1,64 +1,16 @@
-# slumber-squad
+# React + Vite
 
-> Encouraging marginalized genders to adopt AI tools in the workplace — closing the AI usage gap.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/[YOUR-BADGE-ID]/deploy-status)](https://app.netlify.com/sites/[YOUR-SITE-NAME]/deploys)
+Currently, two official plugins are available:
 
-## About
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-slumber-squad is a web app designed to encourage marginalized genders to use AI in the workplace, helping close the AI adoption gap. [Add one or two sentences on the core feature once your squad finalizes the concept.]
+## React Compiler
 
-## Tech Stack
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-- **React** (via Vite) — UI framework
-- **Tailwind CSS** — styling
-- **ESLint + Prettier** — linting and formatting
-- **Netlify** — hosting + continuous deployment
+## Expanding the ESLint configuration
 
-## Getting Started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- npm (bundled with Node)
-
-### Installation
-
-```bash
-# Clone the repo
-git clone https://github.com/cherryontech/slumber-squad.git
-
-# Move into the project folder
-cd slumber-squad
-
-# Install dependencies
-npm install
-```
-
-### Running locally
-
-```bash
-npm run dev
-```
-
-Then open the local URL printed in your terminal (usually http://localhost:5173).
-
-## Scripts
-
-| Script | Command | What it does |
-|---|---|---|
-| **dev** | `npm run dev` | Starts the local development server with hot reload. Use this while building. |
-| **build** | `npm run build` | Bundles the app for production into the `dist/` folder. This is what Netlify runs to deploy. |
-| **preview** | `npm run preview` | Serves the production build locally so you can test what will actually deploy. |
-| **lint** | `npm run lint` | Runs ESLint to catch code problems across the project. |
-| **format** | `npm run format` | Runs Prettier to auto-format all files to a consistent style. |
-
-> These scripts live in the `"scripts"` section of `package.json`. Run any of them with `npm run <name>`.
-
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for our branching, PR, and review process.
-
-## License
-
-This project is licensed under the Hippocratic License 3.0 — see [LICENSE.md](./LICENSE.md).
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

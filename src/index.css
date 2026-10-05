@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+/*
+  Design tokens pulled from the Figma homepage mockup.
+  Defining them in @theme makes Tailwind generate utilities for them,
+  e.g. bg-brand, text-brand, border-brand, font-sans.
+*/
+@theme {
+  --color-brand: #7510a7;
+  --color-brand-hover: #5e0c87;
+  --color-brand-soft: #f6eefa;
+  --color-ink: #111111;
+  --color-ink-muted: #555555;
+  --color-line: #d9d4dc;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  @apply bg-white font-sans text-ink antialiased;
+}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TaskChip from "../components/TaskChip.jsx";
+import ChipGroup from "../components/ChipGroup.jsx";
 
 // Kept as data (not hard-coded JSX) so the list is easy to change
 // and the chips render from one source of truth.
@@ -15,11 +15,6 @@ const TASKS = [
 function HomePage() {
   const [query, setQuery] = useState("");
   const [selectedTask, setSelectedTask] = useState(null);
-
-  // Clicking the selected chip again clears it.
-  function handleTaskClick(task) {
-    setSelectedTask((current) => (current === task ? null : task));
-  }
 
   function handleSearch(event) {
     event.preventDefault(); // stop the browser from reloading the page
@@ -74,22 +69,15 @@ function HomePage() {
           </button>
         </form>
 
-        <section aria-labelledby="task-list-heading" className="mt-8">
-          <h2 id="task-list-heading" className="text-xs font-medium">
-            Or pick a task from the list
-          </h2>
-          <ul className="mt-3 flex max-w-md flex-wrap justify-center gap-2">
-            {TASKS.map((task) => (
-              <li key={task}>
-                <TaskChip
-                  label={task}
-                  selected={selectedTask === task}
-                  onClick={() => handleTaskClick(task)}
-                />
-              </li>
-            ))}
-          </ul>
-        </section>
+        <ChipGroup
+          legend="Or pick a task from the list"
+          options={TASKS}
+          selected={selectedTask}
+          onSelect={setSelectedTask}
+          className="mt-8"
+          legendClassName="text-xs"
+          listClassName="max-w-md"
+        />
 
         <button
           type="button"

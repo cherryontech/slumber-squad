@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TaskChip from "../components/TaskChip.jsx";
+import ChipGroup from "../components/ChipGroup.jsx";
 
 const ROLES = [
   "UX/UI Designer",
@@ -12,30 +12,6 @@ const ROLES = [
 ];
 
 const EXPERIENCE_LEVELS = ["Beginner", "Use it occasionally", "Rockstar"];
-
-// One labeled group of single-select chips.
-// <fieldset> + <legend> tells screen readers which question
-// each chip belongs to ("Select your role, group").
-function ChipGroup({ legend, hint, options, selected, onSelect }) {
-  return (
-    <fieldset className="flex flex-col items-center">
-      <legend className="mx-auto text-sm font-medium">{legend}</legend>
-      {hint && <p className="mt-1 text-sm text-ink-muted">{hint}</p>}
-      <ul className="mt-3 flex max-w-lg flex-wrap justify-center gap-2">
-        {options.map((option) => (
-          <li key={option}>
-            <TaskChip
-              label={option}
-              selected={selected === option}
-              // Clicking the selected chip again clears it
-              onClick={() => onSelect(selected === option ? null : option)}
-            />
-          </li>
-        ))}
-      </ul>
-    </fieldset>
-  );
-}
 
 function QuestionsPage() {
   const [role, setRole] = useState(null);

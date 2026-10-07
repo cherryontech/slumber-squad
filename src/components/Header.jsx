@@ -16,7 +16,7 @@ function Header() {
           <ul className="flex gap-6 text-sm font-medium">
             <li>
               <a href="#projects" className="hover:text-brand">
-                Projects
+                Work areas
               </a>
             </li>
             <li>

@@ -32,8 +32,8 @@ function HomePage() {
       <div className="flex w-full max-w-xl flex-col items-center text-center">
         <h1 className="text-3xl sm:text-4xl">What are you working on?</h1>
         <p className="mt-2 max-w-md text-sm leading-relaxed">
-          Tell us what you are trying to accomplish and we'll help you find
-          relevant AI resources, tutorials and guides.
+          Tell us what you're working on, and we'll point you to relevant AI
+          resources, tutorials, and guides.
         </p>
 
         {/* role="search" makes this a search landmark for screen readers */}

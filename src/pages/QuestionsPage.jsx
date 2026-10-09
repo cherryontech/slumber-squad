@@ -25,9 +25,9 @@ function QuestionsPage() {
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-24">
       <div className="flex w-full max-w-xl flex-col items-center text-center">
-        <h1 className="text-3xl sm:text-4xl">Tell us a bit about you</h1>
+        <h1 className="text-3xl sm:text-4xl">Answer these questions</h1>
         <p className="mt-2 text-sm">
-          We'll help you find resources that fit your goals.
+          These answers will help us target the resources we show you.
         </p>
 
         <div className="mt-8 flex flex-col gap-8">

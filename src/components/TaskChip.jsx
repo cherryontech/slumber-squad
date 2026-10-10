@@ -6,12 +6,14 @@
 // the group, arrow keys to move + select), and screen readers like NVDA
 // announce it properly: "Debugging code, radio button, not checked, 1 of 6".
 //
-// The input is visually hidden (sr-only) but still focusable and readable.
-// The <span> next to it is the pill you see. Tailwind's `peer` classes
-// style the pill based on the hidden input's state (checked, focused).
+// The real radio sits invisibly ON TOP of the pill (absolute inset-0,
+// opacity-0), so it's exactly where the pill is: focusable, clickable,
+// and in the right place for NVDA's browse mode. (A 1px sr-only radio
+// confused Edge + NVDA, see issue #13.) The <span> after it is the pill
+// you see; Tailwind's `peer` classes style it from the radio's state.
 function TaskChip({ name, value, label, checked, onSelect }) {
   return (
-    <label className="cursor-pointer">
+    <label className="relative inline-flex">
       <input
         type="radio"
         name={name}
@@ -22,7 +24,7 @@ function TaskChip({ name, value, label, checked, onSelect }) {
         onClick={onSelect}
         // React requires onChange for a controlled input; onClick does the work
         onChange={() => {}}
-        className="peer sr-only"
+        className="peer absolute inset-0 m-0 cursor-pointer appearance-none rounded-full opacity-0"
       />
       <span className="inline-block rounded-full border border-brand bg-white px-3 py-1 text-xs text-brand transition-colors peer-checked:bg-brand peer-checked:text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand hover:bg-brand-soft peer-checked:hover:bg-brand-hover">
         {label}

@@ -1,3 +1,4 @@
+import { useId } from "react";
 import CountPill from "./CountPill.jsx";
 
 // Homepage card for one work area. The whole card is clickable,
@@ -6,6 +7,10 @@ import CountPill from "./CountPill.jsx";
 // while screen readers hear one short link name ("UX/UI") instead of
 // the entire card's text. has-[a:focus-visible] draws the focus ring
 // around the whole card when the link is focused with the keyboard.
+//
+// aria-describedby links the description and task count to the link, so
+// tabbing to it reads the whole card: "UX/UI, link. Research, design and
+// test products. 3 tasks" instead of just "UX/UI". (QA feedback, Oct 10)
 function WorkAreaCard({
   name,
   description,
@@ -14,6 +19,9 @@ function WorkAreaCard({
   headingLevel = 3,
 }) {
   const Heading = `h${headingLevel}`;
+  const id = useId();
+  const descriptionId = `${id}-description`;
+  const countId = `${id}-count`;
 
   return (
     <article className="relative flex flex-col gap-4 rounded-2xl border border-brand-line bg-white p-4 transition-shadow hover:shadow-md has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-brand">
@@ -21,6 +29,9 @@ function WorkAreaCard({
         <Heading className="text-xl font-semibold">
           <a
             href={href}
+            aria-describedby={
+              description ? `${descriptionId} ${countId}` : countId
+            }
             className="after:absolute after:inset-0 after:rounded-2xl focus:outline-none"
           >
             {name}
@@ -35,9 +46,9 @@ function WorkAreaCard({
           <path d="M7 17 17 7M8 7h9v9" strokeLinecap="round" />
         </svg>
       </div>
-      {description && <p>{description}</p>}
+      {description && <p id={descriptionId}>{description}</p>}
       <div>
-        <CountPill count={taskCount} />
+        <CountPill id={countId} count={taskCount} />
       </div>
     </article>
   );

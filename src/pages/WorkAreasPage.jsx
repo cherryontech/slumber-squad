@@ -15,8 +15,10 @@ function WorkAreasPage() {
 
       {/* auto-rows-fr makes every row as tall as the tallest card, and
           h-full lets each card fill its cell, so all cards match in size
-          no matter how long the text is. Text still wraps (never cut off). */}
-      <ul className="grid auto-rows-fr content-start gap-6 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
+          no matter how long the text is. Text still wraps (never cut off).
+          self-start stops the list stretching to the page height; otherwise
+          the extra height gets shared out as empty space in every card. */}
+      <ul className="grid auto-rows-fr gap-6 self-start sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
         {WORK_AREAS.map((area) => (
           <li key={area.slug} className="grid">
             <section

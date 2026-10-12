@@ -4,10 +4,12 @@ import StageFilter from "../components/StageFilter.jsx";
 import SelectPill from "../components/SelectPill.jsx";
 import TaskCard from "../components/TaskCard.jsx";
 
+// "Newest" and "Shortest" only appear once some tasks have an `updated`
+// date or `minutes`, so the menu never offers a sort that does nothing.
 const SORT_OPTIONS = [
-  { value: "popular", label: "Most popular" },
-  { value: "newest", label: "Newest" },
-  { value: "shortest", label: "Shortest" },
+  { value: "popular", label: "Most popular", needs: null },
+  { value: "newest", label: "Newest", needs: "updated" },
+  { value: "shortest", label: "Shortest", needs: "minutes" },
 ];
 
 // One page per work area, e.g. #work-areas/ux-ui.
@@ -29,6 +31,14 @@ function WorkAreaPage({ area }) {
       ...tools.map((t) => ({ value: t, label: t })),
     ];
   }, [tasks]);
+
+  const sortOptions = useMemo(
+    () =>
+      SORT_OPTIONS.filter(
+        (option) => !option.needs || tasks.some((task) => task[option.needs])
+      ),
+    [tasks]
+  );
 
   const visibleTasks = useMemo(() => {
     const filtered = tasks.filter(
@@ -61,7 +71,7 @@ function WorkAreaPage({ area }) {
             { label: "All work areas", href: "#work-areas" },
           ]}
         />
-        <h1 className="mt-8 text-5xl">{name}</h1>
+        <h1 className="mt-8 text-4xl break-words sm:text-5xl">{name}</h1>
         {intro && <p className="mt-4 max-w-4xl">{intro}</p>}
       </div>
 
@@ -92,12 +102,14 @@ function WorkAreaPage({ area }) {
                 onChange={setTool}
               />
             )}
-            <SelectPill
-              label="Sort"
-              value={sort}
-              options={SORT_OPTIONS}
-              onChange={setSort}
-            />
+            {sortOptions.length > 1 && (
+              <SelectPill
+                label="Sort"
+                value={sort}
+                options={sortOptions}
+                onChange={setSort}
+              />
+            )}
           </div>
         </div>
 

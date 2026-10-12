@@ -1,6 +1,10 @@
 import CountPill from "../components/CountPill.jsx";
 import { WORK_AREAS } from "../data/workAreas.js";
 
+// Each card previews the first few tasks; the count pill shows the total,
+// and the area name links to the full list on the area's own page.
+const PREVIEW_COUNT = 3;
+
 function WorkAreasPage() {
   return (
     <main className="grid w-full flex-1 gap-6 px-6 py-14 sm:px-10 lg:grid-cols-4 lg:px-[5%]">
@@ -32,8 +36,8 @@ function WorkAreasPage() {
               </div>
 
               {/* TODO: make each task a link once task guide pages exist */}
-              <ul>
-                {area.tasks.map((task) => (
+              <ul aria-label={`Popular ${area.name} tasks`}>
+                {area.tasks.slice(0, PREVIEW_COUNT).map((task) => (
                   <li
                     key={task.title}
                     className="flex items-center gap-2 border-b border-line py-2 text-ink-muted last:border-b-0"

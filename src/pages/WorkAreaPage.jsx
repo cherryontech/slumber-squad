@@ -113,8 +113,9 @@ function WorkAreaPage({ area }) {
           </div>
         </div>
 
+        {/* auto-rows-fr: every task card matches the tallest one */}
         {count > 0 ? (
-          <ul className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-4 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visibleTasks.map((task) => (
               <li key={task.title} className="grid">
                 {/* TODO: pass href once task guide pages exist */}

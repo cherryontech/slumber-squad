@@ -32,7 +32,7 @@ function HomePage() {
           <form
             role="search"
             onSubmit={handleSearch}
-            className="mt-6 flex w-full items-center gap-2 rounded-full border-2 border-brand-line bg-white py-1 pr-1 pl-4 focus-within:border-brand"
+            className="mt-6 flex w-full items-center gap-2 rounded-full border-2 border-brand-line bg-white py-1 pr-1 pl-4 focus-within:border-brand focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand"
           >
             <svg
               aria-hidden="true"

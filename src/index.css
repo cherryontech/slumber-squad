@@ -29,3 +29,16 @@ body {
 main h1:focus {
   outline: none;
 }
+
+/* Respect "reduce motion" in the user's OS settings: turn off the color
+   fades and hover shadows. Nothing on the site depends on animation. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

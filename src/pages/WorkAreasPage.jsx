@@ -13,12 +13,15 @@ function WorkAreasPage() {
         <p className="mt-6">Explore practical AI guidance by discipline</p>
       </div>
 
-      <ul className="grid content-start gap-6 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
+      {/* auto-rows-fr makes every row as tall as the tallest card, and
+          h-full lets each card fill its cell, so all cards match in size
+          no matter how long the text is. Text still wraps (never cut off). */}
+      <ul className="grid auto-rows-fr content-start gap-6 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
         {WORK_AREAS.map((area) => (
-          <li key={area.slug}>
+          <li key={area.slug} className="grid">
             <section
               aria-labelledby={`${area.slug}-heading`}
-              className="rounded-2xl border border-brand-line bg-white p-4"
+              className="h-full rounded-2xl border border-brand-line bg-white p-4"
             >
               <div className="flex items-center justify-between gap-4 border-b border-line pb-2">
                 <h2

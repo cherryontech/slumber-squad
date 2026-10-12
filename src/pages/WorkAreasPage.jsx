@@ -1,6 +1,10 @@
 import CountPill from "../components/CountPill.jsx";
 import { WORK_AREAS } from "../data/workAreas.js";
 
+// Each card previews the first few tasks; the count pill shows the total,
+// and the area name links to the full list on the area's own page.
+const PREVIEW_COUNT = 3;
+
 function WorkAreasPage() {
   return (
     <main className="grid w-full flex-1 gap-6 px-6 py-14 sm:px-10 lg:grid-cols-4 lg:px-[5%]">
@@ -9,12 +13,15 @@ function WorkAreasPage() {
         <p className="mt-6">Explore practical AI guidance by discipline</p>
       </div>
 
-      <ul className="grid content-start gap-6 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
+      {/* auto-rows-fr makes every row as tall as the tallest card, and
+          h-full lets each card fill its cell, so all cards match in size
+          no matter how long the text is. Text still wraps (never cut off). */}
+      <ul className="grid auto-rows-fr content-start gap-6 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
         {WORK_AREAS.map((area) => (
-          <li key={area.slug}>
+          <li key={area.slug} className="grid">
             <section
               aria-labelledby={`${area.slug}-heading`}
-              className="rounded-2xl border border-brand-line bg-white p-4"
+              className="h-full rounded-2xl border border-brand-line bg-white p-4"
             >
               <div className="flex items-center justify-between gap-4 border-b border-line pb-2">
                 <h2
@@ -32,8 +39,8 @@ function WorkAreasPage() {
               </div>
 
               {/* TODO: make each task a link once task guide pages exist */}
-              <ul>
-                {area.tasks.map((task) => (
+              <ul aria-label={`Popular ${area.name} tasks`}>
+                {area.tasks.slice(0, PREVIEW_COUNT).map((task) => (
                   <li
                     key={task.title}
                     className="flex items-center gap-2 border-b border-line py-2 text-ink-muted last:border-b-0"

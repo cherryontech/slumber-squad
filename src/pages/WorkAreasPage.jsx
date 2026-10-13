@@ -1,4 +1,5 @@
 import CountPill from "../components/CountPill.jsx";
+import SpokenText from "../components/SpokenText.jsx";
 import { WORK_AREAS } from "../data/workAreas.js";
 
 // Each card previews the first few tasks; the count pill shows the total,
@@ -54,7 +55,7 @@ function WorkAreasPage() {
                     >
                       <path d="m9 6 6 6-6 6" strokeLinecap="round" />
                     </svg>
-                    {task.title}
+                    <SpokenText text={task.title} spoken={task.spoken} />
                   </li>
                 ))}
               </ul>

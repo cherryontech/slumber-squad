@@ -10,6 +10,8 @@
 // When a task guide page exists, pass `href` and the whole card becomes a
 // link (same stretched-link pattern as WorkAreaCard), with the ↗ arrow.
 
+import SpokenText from "./SpokenText.jsx";
+
 const VISIBLE_TOOLS = 2;
 
 function daysAgo(dateString) {
@@ -19,7 +21,15 @@ function daysAgo(dateString) {
   return Math.max(0, Math.round((today - updated) / 86_400_000));
 }
 
-function TaskCard({ title, tools = [], format, minutes, updated, href }) {
+function TaskCard({
+  title,
+  spoken,
+  tools = [],
+  format,
+  minutes,
+  updated,
+  href,
+}) {
   const shownTools = tools.slice(0, VISIBLE_TOOLS);
   const hiddenCount = tools.length - shownTools.length;
   const days = updated ? daysAgo(updated) : null;
@@ -51,10 +61,10 @@ function TaskCard({ title, tools = [], format, minutes, updated, href }) {
               href={href}
               className="after:absolute after:inset-0 after:rounded-2xl focus:outline-none"
             >
-              {title}
+              <SpokenText text={title} spoken={spoken} />
             </a>
           ) : (
-            title
+            <SpokenText text={title} spoken={spoken} />
           )}
         </h3>
         {href && (

@@ -17,6 +17,9 @@
 // Task fields (everything except `title` is optional, and the cards only
 // show what's filled in):
 //   title        task name (must be unique within its work area)
+//   spoken       optional screen reader version of the title, for words NVDA
+//                mispronounces, e.g. "A/B" is read as "uh B", so
+//                spoken: "Generate A-B test ideas" makes it spell the letters
 //   tools        AI tools the guide covers, e.g. ["Claude", "ChatGPT"]
 //   format       e.g. "Tutorial"
 //   minutes      estimated time to complete
@@ -426,7 +429,10 @@ const AREAS = [
           { title: "Generate CTA variations" },
           { title: "Adapt content for different channels" },
           { title: "Improve clarity and tone" },
-          { title: "Generate A/B test ideas" },
+          {
+            title: "Generate A/B test ideas",
+            spoken: "Generate A-B test ideas",
+          },
         ],
       },
       {

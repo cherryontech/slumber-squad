@@ -14,16 +14,18 @@ function HomePage() {
   }
 
   return (
-    <main className="w-full flex-1 px-6 py-10 sm:px-10 lg:px-[5%]">
+    <div className="w-full flex-1 px-6 py-10 sm:px-10 lg:px-[5%]">
       {/* Hero */}
-      <section className="grid items-center gap-8 rounded-3xl bg-brand-soft px-6 py-12 sm:px-12 lg:grid-cols-2 lg:px-24 lg:py-14">
-        <h1 className="text-4xl leading-tight sm:text-5xl">
+      {/* Phones: smaller headline + tighter padding so the hero has room to
+          breathe; it scales up at sm (640px) and lg (1024px). */}
+      <section className="grid items-center gap-5 rounded-3xl bg-brand-soft px-5 py-8 sm:gap-8 sm:px-12 sm:py-12 lg:grid-cols-2 lg:px-24 lg:py-14">
+        <h1 className="text-3xl leading-tight sm:text-4xl lg:text-5xl">
           What are you working on?
         </h1>
 
         {/* min-w-0 lets this grid column shrink on phones instead of overflowing */}
         <div className="min-w-0">
-          <p className="leading-relaxed">
+          <p className="leading-relaxed text-sm sm:text-base">
             Tell us what you're working on, and we'll point you to relevant AI
             resources, tutorials, and guides.
           </p>
@@ -32,7 +34,7 @@ function HomePage() {
           <form
             role="search"
             onSubmit={handleSearch}
-            className="mt-6 flex w-full items-center gap-2 rounded-full border-2 border-brand-line bg-white py-1 pr-1 pl-4 focus-within:border-brand focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand"
+            className="mt-5 flex w-full items-center gap-2 rounded-full sm:mt-6 border-2 border-brand-line bg-white py-1 pr-1 pl-4 focus-within:border-brand focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand"
           >
             <svg
               aria-hidden="true"
@@ -55,7 +57,7 @@ function HomePage() {
             />
             <button
               type="submit"
-              className="rounded-full bg-brand px-5 py-2 font-semibold text-white hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              className="shrink-0 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white sm:px-5 sm:text-base hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             >
               Search
             </button>
@@ -69,7 +71,10 @@ function HomePage() {
         className="mt-10 grid gap-6 lg:grid-cols-4"
       >
         <div>
-          <h2 id="browse-heading" className="text-4xl leading-tight">
+          <h2
+            id="browse-heading"
+            className="text-3xl leading-tight sm:text-4xl"
+          >
             Browse by work area
           </h2>
           <p className="mt-6 text-sm">
@@ -99,7 +104,7 @@ function HomePage() {
 
       {/* Popular tasks */}
       <section aria-labelledby="popular-heading" className="mt-12">
-        <h2 id="popular-heading" className="text-4xl leading-tight">
+        <h2 id="popular-heading" className="text-3xl leading-tight sm:text-4xl">
           Popular tasks
         </h2>
         <p className="mt-4 text-sm">
@@ -123,7 +128,7 @@ function HomePage() {
           ))}
         </ul>
       </section>
-    </main>
+    </div>
   );
 }
 

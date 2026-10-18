@@ -62,7 +62,7 @@ function WorkAreaPage({ area }) {
   const count = visibleTasks.length;
 
   return (
-    <main className="flex-1">
+    <div className="flex-1">
       {/* White intro band */}
       <div className="bg-white px-6 pt-14 pb-14 sm:px-10 lg:px-[5%]">
         <Breadcrumb
@@ -129,7 +129,7 @@ function WorkAreaPage({ area }) {
           </p>
         )}
       </section>
-    </main>
+    </div>
   );
 }
 

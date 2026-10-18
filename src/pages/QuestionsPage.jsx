@@ -23,7 +23,7 @@ function QuestionsPage() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-24">
+    <div className="flex flex-1 items-center justify-center px-6 py-24">
       <div className="flex w-full max-w-xl flex-col items-center text-center">
         <h1 className="text-3xl sm:text-4xl">Tell us a bit about you</h1>
         <p className="mt-2 text-sm">
@@ -54,7 +54,7 @@ function QuestionsPage() {
           Show my Guides
         </button>
       </div>
-    </main>
+    </div>
   );
 }
 

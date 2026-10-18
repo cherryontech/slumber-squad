@@ -8,9 +8,9 @@ const PREVIEW_COUNT = 3;
 
 function WorkAreasPage() {
   return (
-    <main className="grid w-full flex-1 gap-6 px-6 py-14 sm:px-10 lg:grid-cols-4 lg:px-[5%]">
+    <div className="grid w-full flex-1 gap-6 px-6 py-14 sm:px-10 lg:grid-cols-4 lg:px-[5%]">
       <div className="lg:pt-10">
-        <h1 className="text-5xl leading-tight">All work areas</h1>
+        <h1 className="text-4xl leading-tight sm:text-5xl">All work areas</h1>
         <p className="mt-6">Explore practical AI guidance by discipline</p>
       </div>
 
@@ -63,7 +63,7 @@ function WorkAreasPage() {
           </li>
         ))}
       </ul>
-    </main>
+    </div>
   );
 }
 

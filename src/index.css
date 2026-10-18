@@ -25,9 +25,15 @@ body {
 }
 
 /* App.jsx moves focus to the page heading after navigation so screen
-   readers announce the new page. No ring needed: it isn't clickable. */
+   readers announce the new page. Keyboard users get a ring so they can see
+   where focus landed (:focus-visible); mouse users don't. */
 main h1:focus {
   outline: none;
+}
+main h1:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 /* Respect "reduce motion" in the user's OS settings: turn off the color

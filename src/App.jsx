@@ -64,6 +64,8 @@ function App() {
     // After navigating (not on first load), move keyboard focus to the new
     // page's <h1>. Otherwise focus stays on the link you clicked, which no
     // longer exists, and screen reader users don't hear that the page changed.
+    // index.css shows a focus ring on it for keyboard users, so focus never
+    // seems to "disappear" after pressing Enter on a link.
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
@@ -78,13 +80,21 @@ function App() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header page={route.page} />
-      {route.page === "work-areas" && <WorkAreasPage />}
-      {/* key resets the filters when you go from one area to another */}
-      {route.page === "work-area" && (
-        <WorkAreaPage key={route.area.slug} area={route.area} />
-      )}
-      {route.page === "questions" && <QuestionsPage />}
-      {route.page === "home" && <HomePage />}
+      {/* One <main> for every page. id="main-content" is the skip link's
+          target; tabIndex={-1} lets script focus it without adding a Tab stop. */}
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="flex flex-1 flex-col focus:outline-none"
+      >
+        {route.page === "work-areas" && <WorkAreasPage />}
+        {/* key resets the filters when you go from one area to another */}
+        {route.page === "work-area" && (
+          <WorkAreaPage key={route.area.slug} area={route.area} />
+        )}
+        {route.page === "questions" && <QuestionsPage />}
+        {route.page === "home" && <HomePage />}
+      </main>
       <Footer />
     </div>
   );

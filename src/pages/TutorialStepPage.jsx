@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import Breadcrumb from "../components/Breadcrumb.jsx";
+import SpokenText from "../components/SpokenText.jsx";
 import { getProgress, saveProgress, useStoredState } from "../lib/storage.js";
 
 // One tutorial step, e.g. #work-areas/ux-ui/prepare-interview-questions/step-2
@@ -9,28 +10,43 @@ import { getProgress, saveProgress, useStoredState } from "../lib/storage.js";
 //   aria-current="step" (NVDA: "current step"), finished steps say
 //   "completed". On phones the step names are visually hidden to save
 //   space (just the numbered circles show), but screen readers still get them.
+// - After Next / Previous, focus moves to the step's title (data-focus-heading,
+//   see App.jsx), so screen readers announce "Ask AI to find themes" instead
+//   of repeating the tutorial name.
 // - "Same here" is a toggle button (aria-pressed), so NVDA says
-//   "Same here, toggle button, not pressed / pressed".
-// - Previous / Next are plain links in the order you'd expect.
+//   "Same here, 8 people, toggle button, not pressed".
 //
-// No backend: progress and "Same here" are saved in this browser only
-// (see lib/storage.js). That's why there's no shared "(8)" count like the
-// mockup: there's nowhere to add up everyone's clicks yet.
+// No backend: progress and your "Same here" click are saved in this
+// browser only (lib/storage.js). The count starts from the number in
+// data/tutorials.js, and your own click adds 1.
 
 const outlineButton =
-  "inline-flex items-center gap-2 rounded-full border-2 border-brand bg-white px-5 py-2 font-semibold text-brand hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
+  "rounded-full border-2 border-brand bg-white px-5 py-1.5 font-semibold text-brand hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
 const primaryButton =
-  "inline-flex items-center gap-2 rounded-full border-2 border-brand bg-brand px-5 py-2 font-semibold text-white hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
+  "rounded-full border-2 border-brand bg-brand px-5 py-1.5 font-semibold text-white hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
 
-function Arrow({ left = false }) {
+function CheckMark({ className = "" }) {
   return (
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-4 w-4 fill-none stroke-current stroke-2"
+      className={`fill-none stroke-current ${className}`}
+    >
+      <path d="m6 12 4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// Outline "raised hand" icon (decorative)
+function HandIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-4 w-4 shrink-0 fill-none stroke-ink stroke-[1.75]"
     >
       <path
-        d={left ? "M19 12H5m6-6-6 6 6 6" : "M5 12h14m-6-6 6 6-6 6"}
+        d="M8 11V5.5a1.5 1.5 0 0 1 3 0V10m0-5.5V4a1.5 1.5 0 0 1 3 0v6m0-4.5a1.5 1.5 0 0 1 3 0V12m0-3.5a1.5 1.5 0 0 1 3 0V15a7 7 0 0 1-7 7h-1a6 6 0 0 1-5-2.7l-2.6-4a1.5 1.5 0 0 1 2.4-1.8L8 15"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -51,6 +67,7 @@ function TutorialStepPage({ area, task, tutorial, stepNumber }) {
     `same-here:${key}/step-${stepNumber}`,
     false
   );
+  const sameHereCount = (step.sameHere ?? 0) + (sameHere ? 1 : 0);
 
   // Remember how far you got, so the overview can offer "Continue"
   useEffect(() => {
@@ -65,16 +82,23 @@ function TutorialStepPage({ area, task, tutorial, stepNumber }) {
       : `${task.href}/done`;
 
   return (
-    <div className="flex-1 px-6 py-10 sm:px-10 lg:px-[5%]">
-      <Breadcrumb
-        items={[
-          { label: "Home", href: "#" },
-          { label: area.name, href: `#work-areas/${area.slug}` },
-          { label: task.title, href: task.href },
-        ]}
-      />
+    <div className="flex flex-1 flex-col">
+      {/* Light blue title band */}
+      <div className="px-6 pt-14 pb-12 sm:px-10 lg:px-[5%]">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "#" },
+            { label: "All work areas", href: "#work-areas" },
+            { label: area.name, href: `#work-areas/${area.slug}` },
+          ]}
+        />
+        <h1 className="mt-8 text-4xl break-words sm:text-5xl">
+          <SpokenText text={task.title} spoken={task.spoken} />
+        </h1>
+      </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[16rem_1fr] lg:gap-16">
+      {/* Light gray content area, full width */}
+      <div className="grid flex-1 gap-8 bg-surface px-6 py-10 sm:px-10 lg:grid-cols-[18rem_1fr] lg:gap-8 lg:px-[5%]">
         {/* Stepper */}
         <nav aria-label="Tutorial steps" className="lg:self-start">
           <ol className="flex flex-wrap gap-3 lg:flex-col lg:gap-0">
@@ -82,51 +106,50 @@ function TutorialStepPage({ area, task, tutorial, stepNumber }) {
               const number = index + 1;
               const isCurrent = number === stepNumber;
               const isDone = !isCurrent && number <= reached;
+              // Line below this circle: solid purple once you're past it
+              const lineDone = number < stepNumber || number < reached;
               return (
                 <li
                   key={item.title}
-                  className="lg:relative lg:pb-6 lg:last:pb-0"
+                  className="lg:relative lg:pb-8 lg:last:pb-0"
                 >
-                  {/* Connecting line between circles (desktop, decorative) */}
                   {number < total && (
                     <span
                       aria-hidden="true"
-                      className="absolute top-9 bottom-0 left-[17px] hidden w-0.5 bg-brand-line lg:block"
+                      className={`absolute top-6 bottom-0 left-[11px] hidden w-0.5 lg:block ${
+                        lineDone ? "bg-brand" : "bg-brand-line"
+                      }`}
                     />
                   )}
                   <a
                     href={`${task.href}/step-${number}`}
                     aria-current={isCurrent ? "step" : undefined}
-                    className="group flex items-center gap-3 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                    className="group flex items-start gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                   >
                     <span
                       aria-hidden="true"
-                      className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold ${
-                        isCurrent
-                          ? "border-brand bg-brand text-white"
-                          : isDone
-                            ? "border-brand bg-brand-soft text-brand"
-                            : "border-line bg-white text-ink-muted group-hover:border-brand"
+                      className={`relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold max-lg:h-9 max-lg:w-9 max-lg:text-sm ${
+                        isCurrent || isDone
+                          ? "bg-brand text-white"
+                          : "bg-brand-soft text-brand group-hover:bg-brand-line"
                       }`}
                     >
                       {isDone ? (
-                        <svg
-                          viewBox="0 0 24 24"
-                          className="h-4 w-4 fill-none stroke-current stroke-[3]"
-                        >
-                          <path d="m5 12 5 5 9-10" strokeLinecap="round" />
-                        </svg>
+                        <CheckMark className="h-3.5 w-3.5 stroke-[3]" />
                       ) : (
                         number
                       )}
                     </span>
-                    <span
-                      className={`sr-only lg:not-sr-only ${
-                        isCurrent ? "font-semibold text-brand" : ""
-                      } group-hover:underline`}
-                    >
-                      {item.title}
-                      {isDone && <span className="sr-only"> (completed)</span>}
+                    <span className="sr-only text-sm lg:not-sr-only">
+                      <span className="block font-semibold group-hover:underline">
+                        {item.title}
+                      </span>
+                      <span className="block">
+                        {item.description}
+                        {isDone && (
+                          <span className="sr-only"> (completed)</span>
+                        )}
+                      </span>
                     </span>
                   </a>
                 </li>
@@ -135,115 +158,85 @@ function TutorialStepPage({ area, task, tutorial, stepNumber }) {
           </ol>
         </nav>
 
-        <div className="min-w-0 max-w-3xl">
-          <p className="text-sm font-semibold text-brand">
+        <div className="min-w-0">
+          <p className="text-sm">
             Step {stepNumber} of {total}
           </p>
-          <h1 className="mt-2 text-3xl break-words sm:text-4xl">
+          <h2 data-focus-heading className="mt-3 text-2xl font-semibold">
             {step.title}
-          </h1>
+          </h2>
           <p className="mt-4">{step.summary}</p>
 
           {/* Image placeholder (decorative until real screenshots exist).
               TODO: swap for a real image with alt text describing it. */}
-          <div
+          <svg
             aria-hidden="true"
-            className="mt-6 flex aspect-[2/1] max-h-80 w-full items-center justify-center rounded-2xl border border-dashed border-brand-line bg-white"
+            preserveAspectRatio="none"
+            viewBox="0 0 100 25"
+            className="mt-6 h-60 w-full rounded-2xl border border-line bg-white"
           >
-            <svg
-              viewBox="0 0 24 24"
-              className="h-10 w-10 fill-none stroke-brand-line stroke-2"
-            >
-              <rect x="3" y="5" width="18" height="14" rx="2" />
-              <circle cx="9" cy="10" r="1.5" />
-              <path d="m21 16-5-5-8 8" strokeLinejoin="round" />
-            </svg>
-          </div>
+            <path
+              d="M0 0 100 25M100 0 0 25"
+              className="stroke-line"
+              strokeWidth="1"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          {/* What worked / What didn't work first */}
+          <div className="mt-6 grid border-y border-ink py-4 sm:grid-cols-2">
             <section
               aria-labelledby="worked-heading"
-              className="rounded-2xl border border-brand-line bg-white p-4"
+              className="pb-4 sm:pr-6 sm:pb-0"
             >
-              <h2
-                id="worked-heading"
-                className="flex items-center gap-2 font-semibold"
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  className="h-5 w-5 fill-none stroke-brand stroke-2"
-                >
-                  <path d="m5 12 5 5 9-10" strokeLinecap="round" />
-                </svg>
+              <h3 id="worked-heading" className="text-sm font-semibold">
                 What worked
-              </h2>
-              <p className="mt-2 text-sm">{step.worked}</p>
+              </h3>
+              <p className="mt-3 text-sm">{step.worked}</p>
             </section>
             <section
               aria-labelledby="didnt-heading"
-              className="rounded-2xl border border-brand-line bg-white p-4"
+              className="border-t border-line pt-4 sm:border-t-0 sm:border-l sm:border-ink sm:pt-0 sm:pl-4"
             >
-              <h2
-                id="didnt-heading"
-                className="flex items-center gap-2 font-semibold"
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  className="h-5 w-5 fill-none stroke-ink stroke-2"
-                >
-                  <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
-                </svg>
+              <h3 id="didnt-heading" className="text-sm font-semibold">
                 What didn't work first
-              </h2>
-              <p className="mt-2 text-sm">{step.didnt}</p>
+              </h3>
+              <p className="mt-3 text-sm">{step.didnt}</p>
             </section>
           </div>
 
-          <section
-            aria-labelledby="tripped-heading"
-            className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-brand-soft p-4"
-          >
-            <div className="min-w-0 flex-1 basis-64">
-              <h2 id="tripped-heading" className="font-semibold">
-                <span aria-hidden="true">✋ </span>This tripped others up too
-              </h2>
-              <p className="mt-1 text-sm">{step.trippedUp}</p>
-            </div>
-            <div className="flex flex-col items-start gap-1">
-              <button
-                type="button"
-                aria-pressed={sameHere}
-                aria-describedby="same-here-note"
-                onClick={() => setSameHere(!sameHere)}
-                className="inline-flex items-center gap-2 rounded-full border-2 border-brand bg-white px-4 py-1.5 text-sm font-semibold text-brand hover:bg-brand-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand aria-pressed:bg-brand aria-pressed:text-white aria-pressed:hover:bg-brand-hover"
-              >
-                {sameHere && (
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4 fill-none stroke-current stroke-[3]"
-                  >
-                    <path d="m5 12 5 5 9-10" strokeLinecap="round" />
-                  </svg>
-                )}
-                Same here
-              </button>
-              <p id="same-here-note" className="text-xs text-ink-muted">
-                Saved on this device only
-              </p>
-            </div>
-          </section>
+          {/* This tripped others up too */}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+            <p className="flex min-w-0 flex-1 basis-72 items-start gap-1.5 text-sm">
+              <HandIcon />
+              <span>
+                <strong className="font-semibold">
+                  This tripped others up too:
+                </strong>{" "}
+                {step.trippedUp}
+              </span>
+            </p>
+            <button
+              type="button"
+              aria-pressed={sameHere}
+              onClick={() => setSameHere(!sameHere)}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-ink bg-white px-3 py-1 text-sm hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:font-semibold aria-pressed:text-brand"
+            >
+              {sameHere && <CheckMark className="h-3.5 w-3.5 stroke-[3]" />}
+              Same here
+              <span aria-hidden="true">({sameHereCount})</span>
+              <span className="sr-only">
+                , {sameHereCount} {sameHereCount === 1 ? "person" : "people"}
+              </span>
+            </button>
+          </div>
 
-          <div className="mt-10 flex flex-wrap justify-between gap-4">
+          <div className="mt-8 flex flex-wrap justify-between gap-4">
             <a href={previousHref} className={outlineButton}>
-              <Arrow left />
               {stepNumber > 1 ? "Previous" : "Back to overview"}
             </a>
             <a href={nextHref} className={primaryButton}>
               {stepNumber < total ? "Next" : "Finish tutorial"}
-              <Arrow />
             </a>
           </div>
         </div>

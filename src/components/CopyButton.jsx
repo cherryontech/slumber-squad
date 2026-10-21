@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
-// "Copy prompt" button. After copying, the button's visible text changes to
-// "Copied!" for a few seconds, and a polite live region tells screen reader
-// users "Prompt copied to clipboard" (a button's name changing isn't always
-// announced, so the live region makes sure they hear it).
+// Small copy icon button (top-right corner of the prompt box, like the
+// mockup). Its name is "Copy prompt" (visually hidden text), so NVDA reads
+// "Copy prompt, button". After copying, the icon turns into a check, a
+// small "Copied" appears for sighted users, and a polite live region tells
+// screen reader users "Prompt copied to clipboard".
 //
 // The live region is always on the page (empty until needed): NVDA only
 // announces live regions that already existed before their text changed.
@@ -41,11 +42,11 @@ function CopyButton({ text, label = "Copy prompt", what = "Prompt" }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-col items-end gap-1">
       <button
         type="button"
         onClick={handleClick}
-        className="inline-flex items-center gap-2 rounded-full border-2 border-brand bg-white px-4 py-1.5 text-sm font-semibold text-brand hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink hover:bg-brand-line hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       >
         <svg
           aria-hidden="true"
@@ -61,14 +62,16 @@ function CopyButton({ text, label = "Copy prompt", what = "Prompt" }) {
             </>
           )}
         </svg>
-        {status === "copied" ? "Copied!" : label}
+        <span className="sr-only">{label}</span>
       </button>
-      <p role="status" className="text-sm text-ink-muted">
+      <p role="status" className="text-right text-xs text-ink-muted">
         {status === "copied" && (
-          <span className="sr-only">{what} copied to clipboard</span>
+          <>
+            <span aria-hidden="true">Copied</span>
+            <span className="sr-only">{what} copied to clipboard</span>
+          </>
         )}
-        {status === "failed" &&
-          "Couldn't copy automatically. Select the text and copy it instead."}
+        {status === "failed" && "Couldn't copy"}
       </p>
     </div>
   );

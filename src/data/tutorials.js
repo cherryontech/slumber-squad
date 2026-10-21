@@ -7,129 +7,149 @@
 // new tutorial is just adding an entry to this file.
 //
 // Fields:
-//   level, topic     the tags under the title ("Beginner", "UX Research")
-//   intro            paragraph under the title
-//   howAiCanHelp     section 01, a list of paragraphs
+//   level, topic     the pills above the title ("Beginner", "UX Research")
+//   intro            line under the title in the purple banner
+//   howAiCanHelp     section 01
 //   beforeYouStart   section 02, cards: { title, text }
-//   tools            section 03, cards: { name, use }
+//   toolsIntro       section 03 intro line
+//   tools            section 03 cards: { name, use, logo }
+//                    logo = an image in the public/ folder, e.g.
+//                    "/logos/chatgpt.svg". Until the file is added, the
+//                    card shows the tool's first letter instead.
 //   steps            section 04 + the step pages:
-//                    { title, summary, worked, didnt, trippedUp }
-//   prompt           section 05, the copyable prompt ([brackets] = fill in)
-//   example          section 06: { prompt, result: [lines] }
-//   checklist        section 07, questions to check the AI's answer
+//                    title        step name
+//                    description  short line (section 04 and the stepper)
+//                    summary      paragraph under the title on the step page
+//                    worked       "What worked"
+//                    didnt        "What didn't work first"
+//                    trippedUp    "This tripped others up too: ..."
+//                    sameHere     starting number on the "Same here" button
+//   prompt           section 05, the copyable prompt
+//   example          section 06
+//   checklistIntro   section 07 intro line
+//   checklist        section 07 items
 //
-// TODO (content team): text marked "TODO: placeholder" below was written
-// to fill the layout. Please replace it with the final copy from Figma.
+// TODO (content team): text marked "TODO: placeholder" wasn't in the
+// mockups; please replace it with final copy.
+//
+// "Same here" counts: there's no backend to add up everyone's clicks, so
+// each step starts from the number below (TODO: placeholder) and your own
+// click adds 1, saved on your device.
 
 export const TUTORIALS = {
   "ux-ui/prepare-interview-questions": {
     level: "Beginner",
     topic: "UX Research",
-    // TODO: placeholder
     intro:
-      "Good interview questions are open, neutral, and tied to what you want to learn. Use AI to get a strong first draft fast, then shape it with your own judgment.",
-    // TODO: placeholder
-    howAiCanHelp: [
-      "AI can turn a research goal into a first set of interview questions in seconds, so you start by editing instead of facing a blank page.",
-      "It can also spot leading or yes/no questions and suggest neutral rewrites. You still decide what to ask: you know your participants and your product.",
-    ],
+      "Learn how AI can help you prepare clear, relevant and unbiased interview questions for UX research, and follow a simple workflow to get started.",
+    howAiCanHelp:
+      "AI can turn a research goal into a first draft of interview questions in minutes. It suggests angles you might miss and rewords questions that lead the participant. You still decide what to ask, so treat the draft as a starting point.",
     beforeYouStart: [
-      // TODO: placeholder text (titles are from the mockup)
       {
         title: "Know your goal",
-        text: "Write one sentence about what you want to learn. The clearer the goal, the better the questions.",
+        text: "Write down what you want to learn in a sentence or two. The clearer the goal, the better the questions.",
       },
       {
         title: "Know your participants",
-        text: "Note who you're talking to and what they do, so the questions fit their day-to-day.",
+        text: "Note who you're talking to and what they do. A few lines of context is enough.",
       },
       {
         title: "Protect your data",
-        text: "Don't paste names, emails, or anything that identifies a person or your company's private plans.",
+        text: "Leave out names, company details, and anything confidential. If you're unsure, check your team's AI policy.",
       },
     ],
+    toolsIntro:
+      "Any of these can draft questions. Use the one your team already has.",
     tools: [
-      { name: "ChatGPT", use: "Summarize notes and find patterns" },
-      { name: "Claude", use: "Analyze transcripts" },
-      // Mockup says "Brainstrming"; fixed the typo here
-      { name: "Copilot", use: "Research and brainstorming" },
+      {
+        name: "ChatGPT",
+        use: "Summarize notes and find patterns",
+        logo: "/logos/chatgpt.svg",
+      },
+      {
+        name: "Claude",
+        use: "Analyze transcripts",
+        logo: "/logos/claude.svg",
+      },
+      {
+        name: "Copilot",
+        // Mockup says "Brainstrming"; typo fixed
+        use: "Research and Brainstorming",
+        logo: "/logos/copilot.svg",
+      },
     ],
-    // NOTE: these 5 steps are from the mockup. They read like the steps for
-    // "Summarize interview notes", so the design team may want to swap them.
+    // NOTE: these steps read like "Summarize interview notes"; built as
+    // designed, flagged for the design team.
     steps: [
       {
         title: "Collect your notes",
-        // TODO: placeholder
+        description:
+          "Collect three to five interviews and remove sensitive details.",
+        // TODO: placeholder (summary, worked, didnt, trippedUp, sameHere)
         summary:
-          "Gather everything you already know: your research goal, who the participants are, and any notes from past conversations.",
+          "Put your notes from three to five interviews in one document so you can paste them in one go.",
         worked:
-          "Keeping everything in one plain text document, so it's easy to paste in one go.",
+          "Keeping everything in one plain text document, so it was easy to paste.",
         didnt:
-          "Copying in notes from several tools at once. Formatting got lost and the AI mixed up which note was which.",
-        trippedUp:
-          "Many people weren't sure how much background to include. A few sentences is plenty.",
+          "Copying notes from several tools at once. Formatting got lost and notes got mixed up.",
+        trippedUp: "Many people weren't sure how many interviews is enough.",
+        sameHere: 5,
       },
       {
         title: "Ask AI to find themes",
-        // TODO: placeholder summary (worked / didn't / tripped up are from the mockup)
+        description:
+          "Ask AI to find themes with the notes that support each one.",
         summary:
-          "Paste your notes and ask the AI to group them into themes. Themes tell you which topics your questions need to cover.",
+          "Collect notes from three to five interviews in one document and remove names or anything sensitive.",
         worked:
           "Pasting raw notes as they were. AI handles messy bullet points fine, so no cleanup is needed.",
         didnt:
           "Uploading full transcripts with participant names. Remove identifying details before you paste anything.",
         trippedUp: "Many people weren't sure what counts as sensitive.",
+        sameHere: 8, // from the mockup
       },
       {
         title: "Check the themes",
-        // TODO: placeholder
+        description: "Compare them with what participants actually said.",
+        // TODO: placeholder (summary, worked, didnt, trippedUp, sameHere)
         summary:
-          "Read each theme against your notes. Remove anything the AI made up, and merge themes that say the same thing.",
+          "Read each theme next to your notes. Remove anything the AI made up and merge themes that say the same thing.",
         worked:
-          "Asking the AI to quote the note each theme came from, so it's easy to check.",
-        didnt:
-          "Trusting the first list as is. One theme wasn't in the notes at all.",
-        trippedUp:
-          "Many people weren't sure how many themes is too many. Three to five is a good range.",
+          "Asking the AI to quote the note each theme came from, so it was easy to check.",
+        didnt: "Trusting the first list as is. One theme wasn't in the notes.",
+        trippedUp: "Many people weren't sure how many themes is too many.",
+        sameHere: 6,
       },
       {
         title: "Turn them into insights",
-        // TODO: placeholder
+        description: "Turn patterns into a few clear takeaways you can act on.",
+        // TODO: placeholder (summary, worked, didnt, trippedUp, sameHere)
         summary:
-          "For each theme, write what it means for your research and the question you most need answered.",
-        worked:
-          "Using the prompt in this guide to turn each insight into open-ended questions.",
-        didnt:
-          "Asking for “good questions” with no goal. The questions came back generic.",
+          "For each theme, write one takeaway: what it means and what you'd do about it.",
+        worked: "Keeping each insight to one sentence.",
+        didnt: "Asking for insights with no goal. They came back generic.",
         trippedUp:
           "Many people weren't sure how an insight is different from a theme.",
+        sameHere: 4,
       },
       {
         title: "Share your findings",
-        // TODO: placeholder
+        description: "Generate a summary deck and share it",
+        // TODO: placeholder (summary, worked, didnt, trippedUp, sameHere)
         summary:
-          "Share the final questions with your team before the interviews, and note which ones the AI helped write.",
-        worked:
-          "Sharing the questions with one teammate for a quick check on tone and order.",
-        didnt:
-          "Sending the AI's raw output. It still had a leading question in it.",
-        trippedUp:
-          "Many people weren't sure whether to say they used AI. Being open about it builds trust.",
+          "Ask AI to turn your insights into a short summary deck, then check it before you share it with your team.",
+        worked: "Asking for one slide per insight.",
+        didnt: "Sharing the AI's draft without reading it first.",
+        trippedUp: "Many people weren't sure whether to say they used AI.",
+        sameHere: 3,
       },
     ],
     prompt:
       "I'm preparing for user interviews about [topic]. My goal is to learn [what you want to understand]. The participants are [who they are and what they do]. Write 8 open-ended interview questions that start broad and get more specific. Avoid leading questions and yes/no questions. Don't assume the participant uses our product.",
-    example: {
-      prompt:
-        "I'm preparing for user interviews about how freelancers track invoices. My goal is to learn where the process breaks down. The participants are freelance designers who bill 3 or more clients a month. Write 8 open-ended interview questions that start broad and get more specific. Avoid leading questions and yes/no questions. Don't assume the participant uses our product.",
-      // TODO: placeholder (shortened example answer)
-      result: [
-        "Walk me through what happens after you finish a project for a client.",
-        "How do you keep track of who owes you money right now?",
-        "Tell me about the last time an invoice was paid late. What happened?",
-        "What part of billing takes longer than you'd like?",
-      ],
-    },
+    example:
+      "Prompt: I'm preparing for user interviews about how freelancers track invoices. My goal is to learn where the process breaks down. The participants are freelance designers who bill 3 or more clients a month. Write 8 open-ended questions...",
+    checklistIntro:
+      "Before you use the questions, check each one against this list.",
     checklist: [
       "Is it open-ended?",
       "Is it neutral, with no hint of the “right” answer?",

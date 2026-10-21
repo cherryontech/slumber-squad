@@ -170,7 +170,11 @@ function App() {
     }
     // New pages start at the top; going back puts you where you were
     window.scrollTo(0, scrollTarget.current);
-    const heading = document.querySelector("main h1");
+    // A page can point at a more useful heading with data-focus-heading
+    // (tutorial steps focus the step title, not the tutorial name)
+    const heading =
+      document.querySelector("main [data-focus-heading]") ??
+      document.querySelector("main h1");
     if (heading) {
       heading.setAttribute("tabindex", "-1"); // focusable by script only
       heading.focus({ preventScroll: true });

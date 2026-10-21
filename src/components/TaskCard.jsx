@@ -9,6 +9,8 @@
 // "15 minutes, updated 2 days ago".
 //
 // label: small chip above the title, e.g. "Research" or "UX/UI · Research"
+// minutesChip: also show "15 mins" as a chip on the right of that row
+// (decorative: the meta line already says "15 minutes" to screen readers)
 // (search results and related tutorials, where the area/stage isn't obvious).
 //
 // With `href`, the whole card is a link (same stretched-link pattern as
@@ -38,6 +40,7 @@ function TaskCard({
   updated,
   href,
   label,
+  minutesChip = false,
   headingLevel = 3,
   className = "",
 }) {
@@ -76,12 +79,22 @@ function TaskCard({
       } ${className}`}
     >
       {label && (
-        <p id={`${id}-label`} className="-mb-2">
-          <span className="inline-block rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand">
-            {/* "UX/UI · Research" is read as "UX/UI, Research" (no "dot") */}
-            <SpokenText text={label} spoken={label.replaceAll(" · ", ", ")} />
-          </span>
-        </p>
+        <div className="-mb-2 flex items-center justify-between gap-2">
+          <p id={`${id}-label`}>
+            <span className="inline-block rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand">
+              {/* "UX/UI · Research" is read as "UX/UI, Research" (no "dot") */}
+              <SpokenText text={label} spoken={label.replaceAll(" · ", ", ")} />
+            </span>
+          </p>
+          {minutesChip && minutes && (
+            <span
+              aria-hidden="true"
+              className="rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand"
+            >
+              {minutes} mins
+            </span>
+          )}
+        </div>
       )}
 
       <div className="flex items-start justify-between gap-4">

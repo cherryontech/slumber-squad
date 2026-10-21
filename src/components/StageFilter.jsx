@@ -6,18 +6,24 @@ import { useId } from "react";
 // "Filter by stage, grouping. Research, radio button, checked, 1 of 5".
 // The legend is visually hidden because the mockup has no visible label.
 // Clicking the selected stage again clears it and shows every task.
+// The search page reuses it for work areas (legend="Filter by work area").
 //
 // The real radio sits invisibly ON TOP of each pill (absolute inset-0,
 // opacity-0) instead of being shrunk to 1px with sr-only. That way the
 // radio is exactly where the pill is, which keeps NVDA's browse mode,
 // focus highlight, and arrow-key order lined up with what you see.
 // (Issue #13: the 1px sr-only radios confused Edge + NVDA.)
-function StageFilter({ stages, selected, onSelect }) {
+function StageFilter({
+  stages,
+  selected,
+  onSelect,
+  legend = "Filter by stage",
+}) {
   const name = useId();
 
   return (
     <fieldset>
-      <legend className="sr-only">Filter by stage</legend>
+      <legend className="sr-only">{legend}</legend>
       <div className="flex flex-wrap gap-3">
         {stages.map((stage) => (
           <label key={stage} className="relative inline-flex">

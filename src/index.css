@@ -27,10 +27,11 @@ body {
 /* App.jsx moves focus to the page heading after navigation so screen
    readers announce the new page. Keyboard users get a ring so they can see
    where focus landed (:focus-visible); mouse users don't. */
-main h1:focus {
+/* Same for section headings that "On this page" links jump to. */
+main :is(h1, h2):focus {
   outline: none;
 }
-main h1:focus-visible {
+main :is(h1, h2):focus-visible {
   outline: 2px solid var(--color-brand);
   outline-offset: 4px;
   border-radius: 4px;

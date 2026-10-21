@@ -1,4 +1,5 @@
-// One task on a work area page: title, AI tools, and "Tutorial · 15 min · 2d".
+// One task card: optional label chip, title, AI tools, "Tutorial · 15 min · 2d".
+// Used on work area pages, search results, and "more tutorials" lists.
 //
 // Tools: the card shows the first two tools plus "+1", like the mockup.
 // Screen readers get the full list instead ("Tools: Claude, ChatGPT, Gemini"),
@@ -7,9 +8,16 @@
 // Meta line: sighted users see the short "15 min · 2d"; screen readers hear
 // "15 minutes, updated 2 days ago".
 //
-// When a task guide page exists, pass `href` and the whole card becomes a
-// link (same stretched-link pattern as WorkAreaCard), with the ↗ arrow.
+// label: small chip above the title, e.g. "Research" or "UX/UI · Research"
+// (search results and related tutorials, where the area/stage isn't obvious).
+//
+// With `href`, the whole card is a link (same stretched-link pattern as
+// WorkAreaCard), with the ↗ arrow. aria-describedby adds the label, tools
+// and meta to the link, so tabbing to it reads the whole card:
+// "Prepare interview questions, link. Research. Tools: Claude, ChatGPT,
+// Copilot. Tutorial, 15 minutes, updated 2 days ago."
 
+import { useId } from "react";
 import SpokenText from "./SpokenText.jsx";
 
 const VISIBLE_TOOLS = 2;
@@ -29,7 +37,12 @@ function TaskCard({
   minutes,
   updated,
   href,
+  label,
+  headingLevel = 3,
+  className = "",
 }) {
+  const Heading = `h${headingLevel}`;
+  const id = useId();
   const shownTools = tools.slice(0, VISIBLE_TOOLS);
   const hiddenCount = tools.length - shownTools.length;
   const days = updated ? daysAgo(updated) : null;
@@ -46,19 +59,37 @@ function TaskCard({
     },
   ].filter(Boolean);
 
+  const describedBy = [
+    label && `${id}-label`,
+    tools.length > 0 && `${id}-tools`,
+    meta.length > 0 && `${id}-meta`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <article
       className={`relative flex flex-col gap-4 rounded-2xl border border-brand-line bg-white p-4 ${
         href
           ? "transition-shadow hover:shadow-md has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-brand"
           : ""
-      }`}
+      } ${className}`}
     >
+      {label && (
+        <p id={`${id}-label`} className="-mb-2">
+          <span className="inline-block rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand">
+            {/* "UX/UI · Research" is read as "UX/UI, Research" (no "dot") */}
+            <SpokenText text={label} spoken={label.replaceAll(" · ", ", ")} />
+          </span>
+        </p>
+      )}
+
       <div className="flex items-start justify-between gap-4">
-        <h3 className="text-xl font-semibold">
+        <Heading className="text-xl font-semibold">
           {href ? (
             <a
               href={href}
+              aria-describedby={describedBy || undefined}
               className="after:absolute after:inset-0 after:rounded-2xl focus:outline-none"
             >
               <SpokenText text={title} spoken={spoken} />
@@ -66,7 +97,7 @@ function TaskCard({
           ) : (
             <SpokenText text={title} spoken={spoken} />
           )}
-        </h3>
+        </Heading>
         {href && (
           <svg
             aria-hidden="true"
@@ -79,37 +110,45 @@ function TaskCard({
       </div>
 
       {tools.length > 0 && (
-        <ul aria-label="Tools" className="flex flex-wrap gap-2">
-          {tools.map((tool, index) => (
-            <li
-              key={tool}
-              // Tools past the first two stay in the list for screen readers
-              className={
-                index < VISIBLE_TOOLS
-                  ? "rounded-full bg-brand-soft px-3 py-1 text-sm text-brand"
-                  : "sr-only"
-              }
-            >
-              {tool}
-            </li>
-          ))}
-          {hiddenCount > 0 && (
-            <li
-              aria-hidden="true"
-              className="rounded-full bg-brand-soft px-3 py-1 text-sm text-brand"
-            >
-              +{hiddenCount}
-            </li>
-          )}
-        </ul>
+        <>
+          {/* Read only as the link's description ("Tools: Claude, ChatGPT,
+              Copilot"). aria-hidden keeps NVDA's browse mode from reading
+              it twice, since the list below already says the same thing. */}
+          <span id={`${id}-tools`} aria-hidden="true" className="sr-only">
+            Tools: {tools.join(", ")}.
+          </span>
+          <ul aria-label="Tools" className="flex flex-wrap gap-2">
+            {tools.map((tool, index) => (
+              <li
+                key={tool}
+                // Tools past the first two stay in the list for screen readers
+                className={
+                  index < VISIBLE_TOOLS
+                    ? "rounded-full bg-brand-soft px-3 py-1 text-sm text-brand"
+                    : "sr-only"
+                }
+              >
+                {tool}
+              </li>
+            ))}
+            {hiddenCount > 0 && (
+              <li
+                aria-hidden="true"
+                className="rounded-full bg-brand-soft px-3 py-1 text-sm text-brand"
+              >
+                +{hiddenCount}
+              </li>
+            )}
+          </ul>
+        </>
       )}
 
       {meta.length > 0 && (
-        <p className="text-sm text-ink-muted">
+        <p className="mt-auto text-sm text-ink-muted">
           <span aria-hidden="true">
             {meta.map((item) => item.short).join(" · ")}
           </span>
-          <span className="sr-only">
+          <span id={`${id}-meta`} className="sr-only">
             {meta.map((item) => item.spoken).join(", ")}
           </span>
         </p>

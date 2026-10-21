@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 import StageFilter from "../components/StageFilter.jsx";
 import SelectPill from "../components/SelectPill.jsx";
 import TaskCard from "../components/TaskCard.jsx";
+import { useStoredState } from "../lib/storage.js";
 
 // "Newest" and "Shortest" only appear once some tasks have an `updated`
 // date or `minutes`, so the menu never offers a sort that does nothing.
@@ -18,10 +19,25 @@ const SORT_OPTIONS = [
 function WorkAreaPage({ area }) {
   const { name, intro, stages = [], tasks } = area;
 
-  // Start on the first stage (like the mockup); null = show every stage
-  const [stage, setStage] = useState(stages[0] ?? null);
-  const [tool, setTool] = useState("all");
-  const [sort, setSort] = useState("popular");
+  // Start on the first stage (like the mockup); null = show every stage.
+  // Filters are kept for this browser tab, so opening a task and coming
+  // back shows the same list at the same scroll position.
+  const session = { session: true };
+  const [stage, setStage] = useStoredState(
+    `filters:${area.slug}:stage`,
+    stages[0] ?? null,
+    session
+  );
+  const [tool, setTool] = useStoredState(
+    `filters:${area.slug}:tool`,
+    "all",
+    session
+  );
+  const [sort, setSort] = useStoredState(
+    `filters:${area.slug}:sort`,
+    "popular",
+    session
+  );
 
   // Tool dropdown options come from whatever tools this area's tasks use
   const toolOptions = useMemo(() => {
@@ -117,8 +133,8 @@ function WorkAreaPage({ area }) {
         {count > 0 ? (
           <ul className="mt-4 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visibleTasks.map((task) => (
-              <li key={task.title} className="grid">
-                {/* TODO: pass href once task guide pages exist */}
+              <li key={task.slug} className="grid">
+                {/* task.href links to its tutorial (or "coming soon") page */}
                 <TaskCard {...task} />
               </li>
             ))}

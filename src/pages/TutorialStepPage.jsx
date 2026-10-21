@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 import SpokenText from "../components/SpokenText.jsx";
-import { getProgress, saveProgress, useStoredState } from "../lib/storage.js";
+import {
+  getProgress,
+  resetProgress,
+  saveProgress,
+  useStoredState,
+} from "../lib/storage.js";
 
 // One tutorial step, e.g. #work-areas/ux-ui/prepare-interview-questions/step-2
 //
@@ -59,9 +64,6 @@ function TutorialStepPage({ area, task, tutorial, stepNumber }) {
   const { steps } = tutorial;
   const step = steps[stepNumber - 1];
   const total = steps.length;
-  // Steps you reached before this one count as completed. (Read before
-  // this visit is saved, so opening step 5 from a link doesn't tick 1-4.)
-  const reached = getProgress(key).step;
 
   const [sameHere, setSameHere] = useStoredState(
     `same-here:${key}/step-${stepNumber}`,
@@ -71,6 +73,9 @@ function TutorialStepPage({ area, task, tutorial, stepNumber }) {
 
   // Remember how far you got, so the overview can offer "Continue"
   useEffect(() => {
+    // Starting over after finishing resets progress, so the overview
+    // goes back to "Start tutorial" / "Continue" instead of "again"
+    if (stepNumber === 1 && getProgress(key).done) resetProgress(key);
     saveProgress(key, { step: stepNumber });
   }, [key, stepNumber]);
 
@@ -105,9 +110,11 @@ function TutorialStepPage({ area, task, tutorial, stepNumber }) {
             {steps.map((item, index) => {
               const number = index + 1;
               const isCurrent = number === stepNumber;
-              const isDone = !isCurrent && number <= reached;
+              // Like the mockup: steps before this one are done (purple + check),
+              // this one is solid purple, steps after it are faint purple
+              const isDone = number < stepNumber;
               // Line below this circle: solid purple once you're past it
-              const lineDone = number < stepNumber || number < reached;
+              const lineDone = number < stepNumber;
               return (
                 <li
                   key={item.title}
@@ -131,7 +138,7 @@ function TutorialStepPage({ area, task, tutorial, stepNumber }) {
                       className={`relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold max-lg:h-9 max-lg:w-9 max-lg:text-sm ${
                         isCurrent || isDone
                           ? "bg-brand text-white"
-                          : "bg-brand-soft text-brand group-hover:bg-brand-line"
+                          : "bg-brand-line text-brand group-hover:bg-brand-soft"
                       }`}
                     >
                       {isDone ? (

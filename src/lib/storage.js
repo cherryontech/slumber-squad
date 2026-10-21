@@ -58,3 +58,8 @@ export function saveProgress(tutorialKey, { step, done }) {
     done: current.done || Boolean(done),
   });
 }
+
+// "Start tutorial again": forget how far you got
+export function resetProgress(tutorialKey) {
+  writeStored(`progress:${tutorialKey}`, { step: 0, done: false });
+}

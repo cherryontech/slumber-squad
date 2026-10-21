@@ -24,7 +24,15 @@
 //   format       e.g. "Tutorial"
 //   minutes      estimated time to complete
 //   updated      last updated date, "YYYY-MM-DD"
-//   href         link to the task's guide page (turns on the card's link + arrow)
+//
+// Every task also gets, automatically (see the bottom of this file):
+//   slug         from the title, used in the URL: #work-areas/<area>/<slug>
+//   href         link to the task's page (its tutorial, or "coming soon")
+//
+// TODO (content team): tools / format / minutes / updated are PLACEHOLDERS
+// right now (see PLACEHOLDER_DETAILS below) so the Tool and Sort menus and
+// the card details have something to show. Add real values to a task here
+// and they replace the placeholder for that task.
 //
 // Within a stage, list tasks most popular first: "Sort: Most popular"
 // and the All work areas preview (first 3 tasks) use this order.
@@ -44,7 +52,12 @@ const AREAS = [
       {
         name: "Research",
         tasks: [
-          { title: "Prepare interview questions" },
+          {
+            title: "Prepare interview questions",
+            tools: ["Claude", "ChatGPT", "Copilot"],
+            format: "Tutorial",
+            minutes: 15,
+          },
           { title: "Summarize interview notes" },
           { title: "Find candidate themes" },
           { title: "Analyze open-ended feedback" },
@@ -449,25 +462,81 @@ const AREAS = [
   },
 ];
 
+// "Prepare interview questions" -> "prepare-interview-questions"
+// ("Generate A/B test ideas" -> "generate-a-b-test-ideas")
+export function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+// TODO (content team): placeholder card details, rotated across tasks so
+// the Tool filter and the Newest / Shortest sorts have something to work
+// with. Delete this once real values are filled in above.
+const PLACEHOLDER_TOOLS = [
+  ["Claude", "ChatGPT", "Copilot"],
+  ["ChatGPT", "Claude"],
+  ["Copilot", "ChatGPT"],
+  ["Claude", "Gemini"],
+  ["ChatGPT", "Copilot", "Gemini"],
+];
+const PLACEHOLDER_MINUTES = [15, 10, 20, 15, 25, 10];
+const PLACEHOLDER_START = Date.UTC(2026, 9, 18); // Oct 18, 2026
+const DAY = 86_400_000;
+
+function placeholderDetails(index) {
+  const updated = new Date(PLACEHOLDER_START - ((index * 3) % 28) * DAY);
+  return {
+    tools: PLACEHOLDER_TOOLS[index % PLACEHOLDER_TOOLS.length],
+    format: "Tutorial",
+    minutes: PLACEHOLDER_MINUTES[index % PLACEHOLDER_MINUTES.length],
+    updated: updated.toISOString().slice(0, 10),
+  };
+}
+
 // The pages work with a flat task list where each task knows its stage,
 // so we flatten the outline above once here:
 //   stages: [{ name, tasks }]  ->  stages: ["Research", ...]
-//                                  tasks:  [{ title, stage: "Research" }, ...]
+//                                  tasks:  [{ title, stage: "Research",
+//                                             slug, href, ... }, ...]
 export const WORK_AREAS = AREAS.map((area) => ({
   ...area,
   stages: area.stages.map((stage) => stage.name),
-  tasks: area.stages.flatMap((stage) =>
-    stage.tasks.map((task) => ({ ...task, stage: stage.name }))
-  ),
+  tasks: area.stages
+    .flatMap((stage) =>
+      stage.tasks.map((task) => ({ ...task, stage: stage.name }))
+    )
+    .map((task, index) => {
+      const slug = slugify(task.title);
+      return {
+        ...placeholderDetails(index),
+        ...task, // real values win over placeholders
+        slug,
+        href: `#work-areas/${area.slug}/${slug}`,
+      };
+    }),
 }));
 
 export function getWorkArea(slug) {
   return WORK_AREAS.find((area) => area.slug === slug);
 }
 
+export function getTask(area, taskSlug) {
+  return area?.tasks.find((task) => task.slug === taskSlug);
+}
+
+// Every task with its work area attached, for search and "related" lists
+export const ALL_TASKS = WORK_AREAS.flatMap((area) =>
+  area.tasks.map((task) => ({ ...task, area }))
+);
+
 // Homepage "Popular tasks" row: each entry points at an area + task above.
 export const POPULAR_TASKS = [
   { area: "UX/UI", task: "Prepare interview questions" },
   { area: "UX/UI", task: "Summarize interview notes" },
   { area: "Data Analysis", task: "Clean messy data" },
-];
+].map(({ area, task }) => {
+  const match = ALL_TASKS.find((t) => t.area.name === area && t.title === task);
+  return { area, task, href: match?.href ?? "#work-areas" };
+});

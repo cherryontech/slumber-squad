@@ -13,6 +13,9 @@
   --color-brand-soft: #f3e8ff;
   --color-brand-line: #e9d4ff;
   --color-page: #f0f9ff;
+  --color-surface: #fafafa; /* light gray behind tutorial content */
+  --color-info: #e0f2fe; /* light blue boxes (sky-100) */
+  --color-success: #16a34a; /* green check on "Tutorial finished" */
   --color-ink: #111111;
   --color-ink-muted: #555555;
   --color-line: #cacaca;
@@ -27,10 +30,11 @@ body {
 /* App.jsx moves focus to the page heading after navigation so screen
    readers announce the new page. Keyboard users get a ring so they can see
    where focus landed (:focus-visible); mouse users don't. */
-main h1:focus {
+/* Same for section headings that "On this page" links jump to. */
+main :is(h1, h2):focus {
   outline: none;
 }
-main h1:focus-visible {
+main :is(h1, h2):focus-visible {
   outline: 2px solid var(--color-brand);
   outline-offset: 4px;
   border-radius: 4px;

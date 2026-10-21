@@ -5,26 +5,69 @@ import HomePage from "./pages/HomePage.jsx";
 import QuestionsPage from "./pages/QuestionsPage.jsx";
 import WorkAreasPage from "./pages/WorkAreasPage.jsx";
 import WorkAreaPage from "./pages/WorkAreaPage.jsx";
-import { getWorkArea } from "./data/workAreas.js";
+import TutorialPage from "./pages/TutorialPage.jsx";
+import TutorialStepPage from "./pages/TutorialStepPage.jsx";
+import TutorialFinishedPage from "./pages/TutorialFinishedPage.jsx";
+import ComingSoonPage from "./pages/ComingSoonPage.jsx";
+import SearchPage from "./pages/SearchPage.jsx";
+import ContactPage from "./pages/ContactPage.jsx";
+import { getTask, getWorkArea } from "./data/workAreas.js";
+import { getTutorial } from "./data/tutorials.js";
+import { startHistory, trackNavigation } from "./lib/history.js";
 
 // Simple hash-based routing: the part of the URL after "#" picks the page.
-//   #work-areas        All work areas
-//   #work-areas/ux-ui  one work area's page (any slug from workAreas.js)
-//   #questions         questions page
-//   anything else      homepage
+//   #work-areas                          All work areas
+//   #work-areas/ux-ui                    one work area's page
+//   #work-areas/ux-ui/<task>             a task: its tutorial overview, or
+//                                        "coming soon" if it has no tutorial
+//   #work-areas/ux-ui/<task>/step-2      one tutorial step
+//   #work-areas/ux-ui/<task>/done        "Tutorial finished"
+//   #search?q=user%20interviews          search results
+//   #contact                             contact page
+//   #questions                           questions page
+//   anything else                        homepage
 // No extra library needed, and Netlify serves it without redirect rules.
 // If the squad adds React Router later, this is the only place to change.
+const TASK_ROUTE =
+  /^#work-areas\/([\w-]+)\/([\w-]+)(?:\/(?:step-(\d+)|(done)))?$/;
+
 function getRoute() {
   const hash = window.location.hash;
 
   if (hash === "#work-areas") return { page: "work-areas" };
   if (hash === "#questions") return { page: "questions" };
+  if (hash === "#contact") return { page: "contact" };
 
-  const match = hash.match(/^#work-areas\/([\w-]+)$/);
-  if (match) {
-    const area = getWorkArea(match[1]);
+  if (hash === "#search" || hash.startsWith("#search?")) {
+    const params = new URLSearchParams(hash.slice("#search?".length));
+    return { page: "search", query: (params.get("q") ?? "").trim() };
+  }
+
+  const areaMatch = hash.match(/^#work-areas\/([\w-]+)$/);
+  if (areaMatch) {
+    const area = getWorkArea(areaMatch[1]);
     // Unknown slug (typo, old link) falls back to the full list
     return area ? { page: "work-area", area } : { page: "work-areas" };
+  }
+
+  const taskMatch = hash.match(TASK_ROUTE);
+  if (taskMatch) {
+    const [, areaSlug, taskSlug, step, done] = taskMatch;
+    const area = getWorkArea(areaSlug);
+    if (!area) return { page: "work-areas" };
+    const task = getTask(area, taskSlug);
+    // Unknown task falls back to its work area
+    if (!task) return { page: "work-area", area };
+
+    const tutorial = getTutorial(area.slug, task.slug);
+    if (!tutorial) return { page: "coming-soon", area, task };
+
+    const stepNumber = Number(step);
+    if (stepNumber >= 1 && stepNumber <= tutorial.steps.length) {
+      return { page: "tutorial-step", area, task, tutorial, stepNumber };
+    }
+    if (done) return { page: "tutorial-done", area, task, tutorial };
+    return { page: "tutorial", area, task, tutorial };
   }
 
   return { page: "home" };
@@ -34,22 +77,77 @@ function getRoute() {
 // (screen readers also announce the title when a page loads)
 function getTitle(route) {
   const site = "slumber-squad";
-  if (route.page === "work-areas") return `All work areas · ${site}`;
-  if (route.page === "work-area") return `${route.area.name} · ${site}`;
-  if (route.page === "questions") return `Tell us a bit about you · ${site}`;
-  return site;
+  switch (route.page) {
+    case "work-areas":
+      return `All work areas · ${site}`;
+    case "work-area":
+      return `${route.area.name} · ${site}`;
+    case "tutorial":
+      return `${route.task.title} · ${route.area.name} · ${site}`;
+    case "tutorial-step": {
+      const { stepNumber, tutorial, task } = route;
+      const step = tutorial.steps[stepNumber - 1];
+      return `Step ${stepNumber} of ${tutorial.steps.length}: ${step.title} · ${task.title} · ${site}`;
+    }
+    case "tutorial-done":
+      return `Tutorial finished · ${route.task.title} · ${site}`;
+    case "coming-soon":
+      return `${route.task.title} (coming soon) · ${site}`;
+    case "search":
+      return route.query
+        ? `Search results for “${route.query}” · ${site}`
+        : `Search · ${site}`;
+    case "contact":
+      return `Contact us · ${site}`;
+    case "questions":
+      return `Tell us a bit about you · ${site}`;
+    default:
+      return site;
+  }
+}
+
+function Page({ route }) {
+  switch (route.page) {
+    case "work-areas":
+      return <WorkAreasPage />;
+    case "work-area":
+      return <WorkAreaPage area={route.area} />;
+    case "tutorial":
+      return <TutorialPage {...route} />;
+    case "tutorial-step":
+      return <TutorialStepPage {...route} />;
+    case "tutorial-done":
+      return <TutorialFinishedPage {...route} />;
+    case "coming-soon":
+      return <ComingSoonPage {...route} />;
+    case "search":
+      return <SearchPage query={route.query} />;
+    case "contact":
+      return <ContactPage />;
+    case "questions":
+      return <QuestionsPage />;
+    default:
+      return <HomePage />;
+  }
 }
 
 // min-h-screen + flex-col lets <main> grow (flex-1) so the
 // footer always sits at the bottom, matching the mockup.
 function App() {
   const [route, setRoute] = useState(getRoute);
+  // The URL when this route was picked: used as a React key so each page
+  // (and each tutorial step) starts with fresh filters and state
+  const [routeKey, setRouteKey] = useState(() => window.location.hash);
   const isFirstRender = useRef(true);
+  const scrollTarget = useRef(0);
 
   useEffect(() => {
+    startHistory();
     function handleHashChange() {
+      // 0 for a new page; the saved position when you go back to one
+      scrollTarget.current = trackNavigation();
       setRoute(getRoute());
-      window.scrollTo(0, 0); // start each page at the top
+      setRouteKey(window.location.hash);
     }
     // "hashchange" fires when a link like href="#questions" is clicked,
     // and when the browser back/forward buttons change the hash
@@ -70,7 +168,13 @@ function App() {
       isFirstRender.current = false;
       return;
     }
-    const heading = document.querySelector("main h1");
+    // New pages start at the top; going back puts you where you were
+    window.scrollTo(0, scrollTarget.current);
+    // A page can point at a more useful heading with data-focus-heading
+    // (tutorial steps focus the step title, not the tutorial name)
+    const heading =
+      document.querySelector("main [data-focus-heading]") ??
+      document.querySelector("main h1");
     if (heading) {
       heading.setAttribute("tabindex", "-1"); // focusable by script only
       heading.focus({ preventScroll: true });
@@ -87,15 +191,9 @@ function App() {
         tabIndex={-1}
         className="flex flex-1 flex-col focus:outline-none"
       >
-        {route.page === "work-areas" && <WorkAreasPage />}
-        {/* key resets the filters when you go from one area to another */}
-        {route.page === "work-area" && (
-          <WorkAreaPage key={route.area.slug} area={route.area} />
-        )}
-        {route.page === "questions" && <QuestionsPage />}
-        {route.page === "home" && <HomePage />}
+        <Page key={routeKey} route={route} />
       </main>
-      <Footer />
+      <Footer page={route.page} />
     </div>
   );
 }

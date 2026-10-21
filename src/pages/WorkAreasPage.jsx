@@ -41,21 +41,25 @@ function WorkAreasPage() {
                 <CountPill count={area.tasks.length} />
               </div>
 
-              {/* TODO: make each task a link once task guide pages exist */}
               <ul aria-label={`Popular ${area.name} tasks`}>
                 {area.tasks.slice(0, PREVIEW_COUNT).map((task) => (
                   <li
-                    key={task.title}
-                    className="flex items-center gap-2 border-b border-line py-2 text-ink-muted last:border-b-0"
+                    key={task.slug}
+                    className="border-b border-line last:border-b-0"
                   >
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 24 24"
-                      className="h-3.5 w-3.5 shrink-0 fill-none stroke-ink stroke-2"
+                    <a
+                      href={task.href}
+                      className="flex items-center gap-2 py-2 text-ink-muted underline-offset-4 hover:text-brand hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                     >
-                      <path d="m9 6 6 6-6 6" strokeLinecap="round" />
-                    </svg>
-                    <SpokenText text={task.title} spoken={task.spoken} />
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        className="h-3.5 w-3.5 shrink-0 fill-none stroke-current stroke-2"
+                      >
+                        <path d="m9 6 6 6-6 6" strokeLinecap="round" />
+                      </svg>
+                      <SpokenText text={task.title} spoken={task.spoken} />
+                    </a>
                   </li>
                 ))}
               </ul>

@@ -27,6 +27,55 @@ body {
   @apply bg-page font-sans text-ink antialiased;
 }
 
+.work-area-decoration {
+  transform: translateY(var(--work-area-parallax, 0px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-area-decoration {
+    transform: none;
+  }
+}
+
+/* Keep the approved composition untouched at 1440px and below. Above it,
+   office colors continue behind the photograph's existing right-edge fade.
+   Mask coordinates follow the centered 1440px wrapper, not viewport ratios. */
+.ai4u-hero-atmosphere {
+  display: none;
+}
+
+@media (min-width: 1441px) {
+  .ai4u-hero-atmosphere {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    mask-image: linear-gradient(
+      to right,
+      transparent calc(50% + 640px),
+      black calc(50% + 720px),
+      transparent calc(50% + 1240px)
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent calc(50% + 640px),
+      black calc(50% + 720px),
+      transparent calc(50% + 1240px)
+    );
+  }
+
+  .ai4u-hero-atmosphere svg {
+    position: absolute;
+    inset: -120px;
+    width: calc(100% + 240px);
+    height: calc(100% + 240px);
+    overflow: hidden;
+    filter: blur(100px);
+    opacity: 0.3;
+  }
+}
+
 /* App.jsx moves focus to the page heading after navigation so screen
    readers announce the new page. Keyboard users get a ring so they can see
    where focus landed (:focus-visible); mouse users don't. */

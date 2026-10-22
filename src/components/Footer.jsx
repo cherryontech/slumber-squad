@@ -1,7 +1,11 @@
 // Site footer. `page` marks the current link with aria-current="page",
 // so screen readers announce "Contact, current page".
 // TODO: About doesn't have a page yet (it goes to the homepage for now).
+import HomeBenefits from "./HomeBenefits.jsx";
+
 function Footer({ page }) {
+  if (page === "home") return <HomeBenefits />;
+
   return (
     <footer className="border-t border-line bg-white">
       <nav aria-label="Footer">

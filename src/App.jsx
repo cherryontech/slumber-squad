@@ -76,7 +76,7 @@ function getRoute() {
 // Each page's browser tab title, so tabs and history are easy to tell apart
 // (screen readers also announce the title when a page loads)
 function getTitle(route) {
-  const site = "slumber-squad";
+  const site = "AI4U";
   switch (route.page) {
     case "work-areas":
       return `All work areas · ${site}`;

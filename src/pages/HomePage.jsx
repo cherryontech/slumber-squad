@@ -1,96 +1,147 @@
 import SearchForm from "../components/SearchForm.jsx";
-import WorkAreaCard from "../components/WorkAreaCard.jsx";
-import { WORK_AREAS, POPULAR_TASKS } from "../data/workAreas.js";
-
-const FEATURED_AREAS = WORK_AREAS.filter((area) => area.featured);
+import BrowseWorkAreas from "../components/BrowseWorkAreas.jsx";
+import StartWithTask from "../components/StartWithTask.jsx";
+import heroPhoto from "../assets/ai4u-hero.png";
 
 function HomePage() {
   return (
-    <div className="w-full flex-1 px-6 py-10 sm:px-10 lg:px-[5%]">
-      {/* Hero */}
-      {/* Phones: smaller headline + tighter padding so the hero has room to
-          breathe; it scales up at sm (640px) and lg (1024px). */}
-      <section className="grid items-center gap-5 rounded-3xl bg-brand-soft px-5 py-8 sm:gap-8 sm:px-12 sm:py-12 lg:grid-cols-2 lg:px-24 lg:py-14">
-        <h1 className="text-3xl leading-tight sm:text-4xl lg:text-5xl">
-          What are you working on?
-        </h1>
-
-        {/* min-w-0 lets this grid column shrink on phones instead of overflowing */}
-        <div className="min-w-0">
-          <p className="leading-relaxed text-sm sm:text-base">
-            Tell us what you're working on, and we'll point you to relevant AI
-            resources, tutorials, and guides.
-          </p>
-
-          {/* Goes to the search results page (#search?q=...) */}
-          <SearchForm className="mt-5 sm:mt-6" />
-        </div>
-      </section>
-
-      {/* Browse by work area */}
+    <div className="w-full flex-1 px-6 pt-10 pb-5 sm:px-10 lg:px-[5%]">
       <section
-        aria-labelledby="browse-heading"
-        className="mt-10 grid gap-6 lg:grid-cols-4"
+        aria-labelledby="hero-heading"
+        className="relative isolate -mx-6 -mt-10 overflow-hidden bg-linear-to-r from-brand-soft to-brand-soft/60 sm:-mx-10 lg:-mx-[5.5556%]"
       >
-        <div>
-          <h2
-            id="browse-heading"
-            className="text-3xl leading-tight sm:text-4xl"
+        {/* Only the top-right office background is sampled; the SVG viewport
+            excludes every person before the atmospheric blur is applied. */}
+        <div aria-hidden="true" className="ai4u-hero-atmosphere">
+          <svg
+            focusable="false"
+            viewBox="1400 0 272 180"
+            preserveAspectRatio="xMidYMid slice"
           >
-            Browse by work area
-          </h2>
-          <p className="mt-6 text-sm">
-            Explore practical AI guidance by discipline
-          </p>
-          <a
-            href="#work-areas"
-            className="mt-6 inline-block rounded-full border-2 border-brand px-4 py-1.5 font-semibold text-brand hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-          >
-            See all work areas
-          </a>
+            <image href={heroPhoto} width="1672" height="940" />
+          </svg>
         </div>
-
-        <ul className="grid gap-6 sm:grid-cols-2 lg:col-span-3">
-          {FEATURED_AREAS.map((area) => (
-            <li key={area.slug} className="grid">
-              <WorkAreaCard
-                name={area.name}
-                description={area.description}
-                taskCount={area.tasks.length}
-                href={`#work-areas/${area.slug}`}
-              />
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Popular tasks */}
-      <section aria-labelledby="popular-heading" className="mt-12">
-        <h2 id="popular-heading" className="text-3xl leading-tight sm:text-4xl">
-          Popular tasks
-        </h2>
-        <p className="mt-4 text-sm">
-          Get started with common tasks across different work areas
-        </p>
-        <ul className="mt-4 flex flex-wrap gap-2">
-          {POPULAR_TASKS.map(({ area, task, href }) => (
-            <li key={href}>
-              <a
-                href={href}
-                className="inline-block rounded-full border border-brand bg-white px-3 py-1 text-sm hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+        <div className="relative isolate mx-auto w-full max-w-[1440px]">
+          {/* Organic decoration stays outside the text and face areas. */}
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            viewBox="0 0 1440 440"
+            preserveAspectRatio="none"
+            className="pointer-events-none absolute inset-0 -z-20 h-full w-full overflow-visible [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]"
+          >
+            <path
+              d="M0 180C170 30 375 40 620 120C400 95 205 155 0 300Z"
+              className="fill-brand-line/25"
+            />
+            <path
+              d="M0 240C55 305 75 390 250 440H0Z"
+              className="fill-purple-300/20"
+            />
+            <path
+              d="M0 340C65 400 150 430 280 440"
+              className="fill-none stroke-white/70"
+              strokeWidth="2"
+            />
+          </svg>
+          {/* The mask belongs to the image itself: its transparent edge reveals
+            the same continuous background as the text side of the hero. */}
+          {/* Cap the photo's scale so a wide viewport does not enlarge faces
+            and push the laptop below the banner's visible area. */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden max-w-[900px] lg:block lg:w-[55%] xl:w-[80%]">
+            <img
+              src={heroPhoto}
+              alt="Four professionals collaborating around a laptop in a bright workspace."
+              width={1672}
+              height={940}
+              fetchPriority="high"
+              className="h-full w-full object-cover object-top"
+              style={{
+                maskImage:
+                  "linear-gradient(to right, transparent 0%, transparent 3%, rgba(0,0,0,.35) 15%, rgba(0,0,0,.78) 28%, black 45%, black 94%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to right, transparent 0%, transparent 3%, rgba(0,0,0,.35) 15%, rgba(0,0,0,.78) 28%, black 45%, black 94%, transparent 100%)",
+              }}
+            />
+          </div>
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            viewBox="0 0 1440 440"
+            preserveAspectRatio="none"
+            className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block"
+          >
+            <path
+              d="M610 154Q760 10 910-15"
+              className="fill-none stroke-brand/30"
+              strokeWidth="1"
+            />
+            <path
+              d="M1378 80Q1380 28 1438 12Q1440 70 1378 80Z"
+              className="fill-purple-300/50"
+            />
+            <path
+              d="M1350 142Q1354 107 1388 96Q1390 135 1350 142Z"
+              className="fill-pink-200/60"
+            />
+          </svg>
+          <div className="relative z-10 px-6 pt-10 pb-8 sm:px-10 sm:pt-12 lg:px-[5%] lg:py-12 xl:py-14">
+            <div className="w-full min-w-0 max-w-[560px] lg:w-[45%] xl:w-full">
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold tracking-widest text-brand sm:gap-x-3">
+                <span>LEARN</span>
+                <span aria-hidden="true">✦</span>
+                <span>PRACTICE</span>
+                <span aria-hidden="true">✦</span>
+                <span>APPLY</span>
+                <span aria-hidden="true">✦</span>
+                <span>GROW</span>
+              </p>
+              <h1
+                id="hero-heading"
+                className="mt-5 max-w-2xl text-4xl font-semibold leading-[1.12] tracking-tight focus-visible:outline-none! sm:text-5xl xl:text-6xl"
               >
-                <span className="text-ink-muted">{area}</span>
-                {/* The dot is visual only; screen readers hear "UX/UI: ..." */}
-                <span aria-hidden="true" className="mx-1.5 text-ink-muted">
-                  ·
-                </span>
-                <span className="sr-only">: </span>
-                <span className="font-semibold text-brand">{task}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+                Build real AI skills for your{" "}
+                <span className="text-brand">real work.</span>
+              </h1>
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
+                Practical guidance, examples, and templates to help you use AI
+                confidently in the workplace — one step at a time.
+              </p>
+              {/* Goes to the search results page (#search?q=...) */}
+              <SearchForm className="mt-5 shadow-sm sm:mt-6" />
+            </div>
+          </div>
+          <div className="pointer-events-none relative -z-10 lg:hidden">
+            <img
+              src={heroPhoto}
+              alt="Four professionals collaborating around a laptop in a bright workspace."
+              width={1672}
+              height={940}
+              fetchPriority="high"
+              className="aspect-video w-full object-cover object-center"
+              style={{
+                maskImage:
+                  "linear-gradient(to bottom, transparent, black 18%, black 85%, transparent)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, transparent, black 18%, black 85%, transparent)",
+              }}
+            />
+          </div>
+        </div>
+        <svg
+          aria-hidden="true"
+          focusable="false"
+          viewBox="0 0 1000 60"
+          preserveAspectRatio="none"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-6 w-full fill-page sm:h-10"
+        >
+          <path d="M0 0Q500 115 1000 0V60H0Z" />
+        </svg>
       </section>
+
+      <BrowseWorkAreas />
+
+      <StartWithTask />
     </div>
   );
 }
